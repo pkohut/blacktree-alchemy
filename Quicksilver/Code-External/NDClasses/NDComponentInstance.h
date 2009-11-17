@@ -15,13 +15,13 @@
 @interface NDComponentInstance : NSObject <NDAppleScriptObjectSendEvent, NDAppleScriptObjectActive>
 {
 @private
-	ComponentInstance						scriptingComponent;
+	ComponentInstance					scriptingComponent;
 	id<NDAppleScriptObjectSendEvent>	sendAppleEventTarget;
 	id<NDAppleScriptObjectActive>		activeTarget;
-	OSASendUPP								defaultSendProcPtr;
-	long										defaultSendProcRefCon;
-	OSAActiveProcPtr						defaultActiveProcPtr;
-	long										defaultActiveProcRefCon;
+	OSASendUPP							defaultSendProcPtr;
+	SRefCon								defaultSendProcRefCon;
+	OSAActiveProcPtr					defaultActiveProcPtr;
+	SRefCon								defaultActiveProcRefCon;
 
 }
 

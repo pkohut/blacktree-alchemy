@@ -172,7 +172,7 @@ static NDComponentInstance		* sharedComponentInstance = nil;
 {
 	if( aTarget != sendAppleEventTarget )
 	{
-		OSErr		AppleEventSendProc( const AppleEvent *theAppleEvent, AppleEvent *reply, AESendMode sendMode, AESendPriority sendPriority, long timeOutInTicks, AEIdleUPP idleProc, AEFilterUPP filterProc, long refCon );
+		OSErr		AppleEventSendProc( const AppleEvent *theAppleEvent, AppleEvent *reply, AESendMode sendMode, AESendPriority sendPriority, SInt32 timeOutInTicks, AEIdleUPP idleProc, AEFilterUPP filterProc, SRefCon refCon );
 
 		NSParameterAssert( sizeof(long) == sizeof(id) );
 		
@@ -184,7 +184,7 @@ static NDComponentInstance		* sharedComponentInstance = nil;
 				ComponentInstance		theComponent = [self scriptingComponent];
 
 				NSAssert( OSAGetSendProc( theComponent, &defaultSendProcPtr, &defaultSendProcRefCon) == noErr, @"Could not get default AppleScript send procedure");
-				NSAssert( OSASetSendProc( theComponent, AppleEventSendProc, (long)self ) == noErr, @"Could not set send procedure" );
+				NSAssert( OSASetSendProc( theComponent, AppleEventSendProc, self ) == noErr, @"Could not set send procedure" );
 			}
 
 			[sendAppleEventTarget release];
@@ -216,7 +216,7 @@ static NDComponentInstance		* sharedComponentInstance = nil;
  */
 - (void)setActiveTarget:(id<NDAppleScriptObjectActive>)aTarget
 {
-	OSErr						AppleScriptActiveProc( long aRefCon );
+	OSErr						AppleScriptActiveProc( SRefCon aRefCon );
 
 	if( aTarget != activeTarget )
 	{
@@ -230,7 +230,7 @@ static NDComponentInstance		* sharedComponentInstance = nil;
 				ComponentInstance		theComponent = [self scriptingComponent];
 
 				NSAssert( OSAGetActiveProc(theComponent, &defaultActiveProcPtr, &defaultActiveProcRefCon ) == noErr, @"Could not get default AppleScript active procedure");
-				NSAssert( OSASetActiveProc( theComponent, AppleScriptActiveProc , (long)self ) == noErr, @"Could not set AppleScript active procedure.");
+				NSAssert( OSASetActiveProc( theComponent, AppleScriptActiveProc , self ) == noErr, @"Could not set AppleScript active procedure.");
 			}
 
 			[activeTarget release];
@@ -305,7 +305,7 @@ static NDComponentInstance		* sharedComponentInstance = nil;
 /*
  * function AppleEventSendProc
  */
-OSErr AppleEventSendProc( const AppleEvent *anAppleEvent, AppleEvent *aReply, AESendMode aSendMode, AESendPriority aSendPriority, long aTimeOutInTicks, AEIdleUPP anIdleProc, AEFilterUPP aFilterProc, long aRefCon )
+OSErr AppleEventSendProc( const AppleEvent *anAppleEvent, AppleEvent *aReply, AESendMode aSendMode, AESendPriority aSendPriority, SInt32 aTimeOutInTicks, AEIdleUPP anIdleProc, AEFilterUPP aFilterProc, SRefCon aRefCon )
 {
 	NDComponentInstance			* self = (id)aRefCon;
 	OSErr								theError = errOSASystemError;
@@ -337,7 +337,7 @@ OSErr AppleEventSendProc( const AppleEvent *anAppleEvent, AppleEvent *aReply, AE
 /*
  * function AppleScriptActiveProc
  */
-OSErr AppleScriptActiveProc( long aRefCon )
+OSErr AppleScriptActiveProc( SRefCon aRefCon )
 {
 	NDComponentInstance	* self = (id)aRefCon;
 	id							theActiveTarget = [self activeTarget];
