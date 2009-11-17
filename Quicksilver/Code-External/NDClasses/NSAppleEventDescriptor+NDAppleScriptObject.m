@@ -149,7 +149,8 @@
  */
 + (id)descriptorWithURL:(NSURL *)aURL
 {
-	return [self descriptorWithDescriptorType:typeFileURL data:[NSData dataWithBytes:aURL length:sizeof(NSURL)]];
+    NSString *urlString = [aURL absoluteString];
+	return [self descriptorWithDescriptorType:typeFileURL data:[NSData dataWithBytes:[urlString UTF8String] length:[urlString lengthOfBytesUsingEncoding:NSUTF8StringEncoding]]];
 }
 
 /*
@@ -204,7 +205,7 @@
  */
 + (id)descriptorWithShort:(short int)aValue
 {
-	return [self descriptorWithDescriptorType:typeShortInteger data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
+	return [self descriptorWithDescriptorType:typeSInt16 data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
 }
 // typeLongInteger
 /*
@@ -212,7 +213,7 @@
  */
 + (id)descriptorWithLong:(long int)aValue
 {
-	return [self descriptorWithDescriptorType:typeLongInteger data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
+	return [self descriptorWithDescriptorType:typeSInt32 data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
 }
 // typeInteger
 /*
@@ -220,7 +221,7 @@
  */
 + (id)descriptorWithInt:(int)aValue
 {
-	return [self descriptorWithDescriptorType:typeInteger data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
+	return [self descriptorWithDescriptorType:typeSInt32 data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
 }
 // typeShortFloat
 /*
@@ -228,7 +229,7 @@
  */
 + (id)descriptorWithFloat:(float)aValue
 {
-	return [self descriptorWithDescriptorType:typeShortFloat data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
+	return [self descriptorWithDescriptorType:typeIEEE32BitFloatingPoint data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
 }
 // typeLongFloat
 /*
@@ -236,7 +237,7 @@
  */
 + (id)descriptorWithDouble:(double)aValue
 {
-	return [self descriptorWithDescriptorType:typeLongFloat data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
+	return [self descriptorWithDescriptorType:typeIEEE64BitFloatingPoint data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
 }
 // typeMagnitude
 /*
@@ -244,7 +245,7 @@
  */
 + (id)descriptorWithUnsignedInt:(unsigned int)aValue
 {
-	return [self descriptorWithDescriptorType:typeMagnitude data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
+	return [self descriptorWithDescriptorType:typeUInt32 data:[NSData dataWithBytes:&aValue length: sizeof(aValue)]];
 }
 
 /*
@@ -732,11 +733,11 @@
 	switch([self descriptorType])
 	{
 		case typeBoolean:						//	Boolean value
-		case typeShortInteger:				//	16-bit integer
-		case typeLongInteger:				//	32-bit integer
-		case typeShortFloat:					//	SANE single
-		case typeFloat:						//	SANE double
-		case typeMagnitude:					//	unsigned 32-bit integer
+		case typeSInt16:				//	16-bit integer
+		case typeSInt32:				//	32-bit integer
+		case typeIEEE32BitFloatingPoint:					//	SANE single
+		case typeIEEE64BitFloatingPoint:						//	SANE double
+		case typeUInt32:					//	unsigned 32-bit integer
 		case typeTrue:							//	TRUE Boolean value
 		case typeFalse:						//	FALSE Boolean value
 			theValue = [self numberValue];
@@ -747,7 +748,7 @@
 			Size			theActualSize;
 			short int	theStart,
 							theEnd;
-			if( AEGetParamPtr([self aeDesc], keyOSASourceStart, typeShortInteger, &theTypeCode, (void*)&theStart, sizeof(short int), &theActualSize ) == noErr && AEGetParamPtr([self aeDesc], keyOSASourceEnd, typeShortInteger, &theTypeCode, (void*)&theEnd, sizeof(short int), &theActualSize ) == noErr )
+			if( AEGetParamPtr([self aeDesc], keyOSASourceStart, typeSInt16, &theTypeCode, (void*)&theStart, sizeof(short int), &theActualSize ) == noErr && AEGetParamPtr([self aeDesc], keyOSASourceEnd, typeSInt16, &theTypeCode, (void*)&theEnd, sizeof(short int), &theActualSize ) == noErr )
 			{
 				theValue = [NSValue valueWithRange:NSMakeRange( theStart, theEnd - theStart )];
 			}
@@ -759,7 +760,7 @@
 			Size			theActualSize;
 			short int	theStart,
 							theEnd;
-			if( AEGetParamPtr ([self aeDesc], keyAERangeStart, typeShortInteger, &theTypeCode, (void*)&theStart, sizeof(short int), &theActualSize ) == noErr && AEGetParamPtr ([self aeDesc], keyAERangeStop, typeShortInteger, &theTypeCode, (void*)&theEnd, sizeof(short int), &theActualSize ) == noErr )
+			if( AEGetParamPtr ([self aeDesc], keyAERangeStart, typeSInt16, &theTypeCode, (void*)&theStart, sizeof(short int), &theActualSize ) == noErr && AEGetParamPtr ([self aeDesc], keyAERangeStop, typeSInt16, &theTypeCode, (void*)&theEnd, sizeof(short int), &theActualSize ) == noErr )
 			{
 				theValue = [NSValue valueWithRange:NSMakeRange( theStart, theEnd - theStart )];
 			}
@@ -785,25 +786,25 @@
 		case typeBoolean:						//	Boolean value
 			theNumber = [NSNumber numberWithBool:[self booleanValue]];
 			break;
-		case typeShortInteger:				//	16-bit integer
+		case typeSInt16:				//	16-bit integer
 			theNumber = [NSNumber numberWithShort: [self int32Value]];
 			break;
-		case typeLongInteger:				//	32-bit integer
-//		case typeInteger:							//	32-bit integer
+		case typeSInt32:				//	32-bit integer
+//		case typeSInt32:							//	32-bit integer
 		{
 			int		theInteger;
 			if( AEGetDescData([self aeDesc], &theInteger, sizeof(int)) == noErr )
 				theNumber = [NSNumber numberWithInt: theInteger];
 			break;
 		}
-		case typeShortFloat:					//	SANE single
+		case typeIEEE32BitFloatingPoint:					//	SANE single
 //		case typeSMFloat:							//	SANE single
 		{
 			theNumber = [NSNumber numberWithFloat:[self floatValue]];
 			break;
 		}
-		case typeFloat:						//	SANE double
-//		case typeLongFloat:						//	SANE double
+		case typeIEEE64BitFloatingPoint:						//	SANE double
+//		case typeIEEE64BitFloatingPoint:						//	SANE double
 		{
 			theNumber = [NSNumber numberWithDouble:[self doubleValue]];
 			break;
@@ -812,7 +813,7 @@
 //			break;
 //		case typeComp:							//	SANE comp
 //			break;
-		case typeMagnitude:					//	unsigned 32-bit integer
+		case typeUInt32:					//	unsigned 32-bit integer
 		{
 			theNumber = [NSNumber numberWithUnsignedLong:[self unsignedIntValue]];
 			break;
@@ -849,17 +850,17 @@
 	switch(theDescType)
 	{
 		case typeBoolean:						//	1-byte Boolean value
-		case typeShortInteger:				//	16-bit integer
+		case typeSInt16:				//	16-bit integer
 //		case typeSMInt:							//	16-bit integer
-		case typeLongInteger:				//	32-bit integer
-//		case typeInteger:							//	32-bit integer
-		case typeShortFloat:					//	SANE single
+		case typeSInt32:				//	32-bit integer
+//		case typeSInt32:							//	32-bit integer
+		case typeIEEE32BitFloatingPoint:					//	SANE single
 //		case typeSMFloat:							//	SANE single
-		case typeFloat:						//	SANE double
- //		case typeLongFloat:						//	SANE double
+		case typeIEEE64BitFloatingPoint:						//	SANE double
+ //		case typeIEEE64BitFloatingPoint:						//	SANE double
 //		case typeExtended:						//	SANE extended
 //		case typeComp:							//	SANE comp
-		case typeMagnitude:					//	unsigned 32-bit integer
+		case typeUInt32:					//	unsigned 32-bit integer
 		case typeTrue:							//	TRUE Boolean value
 		case typeFalse:						//	FALSE Boolean value
 			theResult = [self numberValue];
