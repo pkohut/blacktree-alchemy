@@ -12,7 +12,6 @@
 #include <IOKit/graphics/IOGraphicsInterface.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <IOKit/graphics/IOGraphicsTypes.h>
-//#include <Carbon/Carbon.h>
 #include <ApplicationServices/ApplicationServices.h>
 
 static void KeyArrayCallback(const void *key, const void *value, void *context) { CFArrayAppendValue(context, key);  }
@@ -20,23 +19,22 @@ static void KeyArrayCallback(const void *key, const void *value, void *context) 
 @implementation NSScreen (BLTRExtensions)
 
 + (NSScreen *)screenWithNumber:(int)number {
-	NSEnumerator *e = [[self screens] objectEnumerator];
-	NSScreen *screen;
-	while(screen = [e nextObject]) {
-		if ([screen screenNumber] == number) {
-			return screen;
-		}
-	}
-    //NSLog(@"Can't find Screen %d", number);NSLog(@"screenx %d %d", [screen screenNumber] , number);
-	return nil;
+    NSScreen * screen = nil;
+    @try {
+        screen = [[NSScreen screens] objectAtIndex:number];
+    }
+    @catch (NSException *e) {
+        NSLog(@"Can't find Screen %d", number);
+    }
+    return screen;
 }
 
-- (int)screenNumber{
-	return _screenNumber;//[[[self deviceDescription]objectForKey:@"NSScreenNumber"]intValue]; 
+- (int)screenNumber {
+	return [[NSScreen screens] indexOfObject:self];
 } 
 
 - (BOOL)usesOpenGLAcceleration {
-	return (BOOL)CGDisplayUsesOpenGLAcceleration((CGDirectDisplayID)_screenNumber);
+	return (BOOL)CGDisplayUsesOpenGLAcceleration([self screenNumber]);
 }
 
 - (NSString *)deviceName {
@@ -46,7 +44,7 @@ static void KeyArrayCallback(const void *key, const void *value, void *context) 
     CFDictionaryRef dict, names;
     NSString *localName = nil;
     
-	displayPort = CGDisplayIOServicePort((CGDirectDisplayID)_screenNumber);
+	displayPort = CGDisplayIOServicePort([self screenNumber]);
 	if ( displayPort == MACH_PORT_NULL )
 		return NULL; /* No physical device to get a name from */
 	dict = IODisplayCreateInfoDictionary(displayPort, 0);
@@ -69,8 +67,8 @@ static void KeyArrayCallback(const void *key, const void *value, void *context) 
 	CFRelease(dict);
 
 	if (!localName) {
-		uint32_t model = CGDisplayModelNumber((CGDirectDisplayID) _screenNumber);
-		uint32_t vendor = CGDisplayVendorNumber((CGDirectDisplayID) _screenNumber);
+		uint32_t model = CGDisplayModelNumber([self screenNumber]);
+		uint32_t vendor = CGDisplayVendorNumber([self screenNumber]);
 		localName = [[NSDictionary dictionaryWithContentsOfFile:[NSString stringWithFormat:@"/System/Library/Displays/Overrides/DisplayVendorID-%x/DisplayProductID-%x", vendor, model]] objectForKey:@"DisplayProductName"];
 		if (!localName) localName = [NSString stringWithFormat:@"Unknown Display (%x:%x)", vendor, model];
 	}
