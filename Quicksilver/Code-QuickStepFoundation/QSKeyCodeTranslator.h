@@ -12,7 +12,6 @@
 @interface QSKeyCodeTranslator : NSObject {
 
 }
-+(OSStatus) InitAscii2KeyCodeTable;
-- (short) AsciiToKeyCode:(short)asciiCode;
-- (short) keyCodeForCharacter:(NSString *)character;
++ (id)translator;
+- (CGKeyCode)keyCodeForCharCode:(CGCharCode)charCode;
 @end

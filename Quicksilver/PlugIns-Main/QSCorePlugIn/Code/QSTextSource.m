@@ -18,11 +18,7 @@
 #define kQSTextDiffAction @"QSTextDiffAction"
 #define kQSLargeTypeAction @"QSLargeTypeAction"
 
-Ascii2KeyCodeTable keytable;
 @implementation QSTextActions
-+(void)initialize {
-	[self InitAscii2KeyCodeTable];
-}
 
 - (QSObject *)showLargeType:(QSObject *)dObject {
 	QSShowLargeType([dObject stringValue]);
@@ -44,58 +40,25 @@ Ascii2KeyCodeTable keytable;
 }
 
 - (QSObject *)typeObject:(QSObject *)dObject {
-	// NSLog( AsciiToKeyCode(&ttable, "m") {
-	// short AsciiToKeyCode(Ascii2KeyCodeTable *ttable, short asciiCode) {
 	[self typeString2:[dObject objectForType:QSTextType]];
 	return nil;
 }
 
-+(OSStatus) InitAscii2KeyCodeTable {
-	unsigned char *theCurrentKCHR, *ithKeyTable;
-	short count, i, j, resID;
-	Handle theKCHRRsrc;
-	ResType rType;
-	/* set up our table to all minus ones */
-	for (i = 0; i<256; i++) keytable.transtable[i] = -1;
-	/* find the current kchr resource ID */
-	keytable.kchrID = (short) GetScriptVariable(smCurrentScript,
-												smScriptKeys);
-	/* get the current KCHR resource */
-	theKCHRRsrc = GetResource('KCHR', keytable.kchrID);
-	if (theKCHRRsrc == NULL) return resNotFound;
-	GetResInfo(theKCHRRsrc, &resID, &rType, keytable.KCHRname);
-	/* dereference the resource */
-	theCurrentKCHR = (unsigned char *)(*theKCHRRsrc);
-	/* get the count from the resource */
-	count = * (short *)(theCurrentKCHR + kTableCountOffset);
-	/* build inverse table by merging all key tables */
-	for (i = 0; i<count; i++) {
-		ithKeyTable = theCurrentKCHR + kFirstTableOffset + (i * kTableSize);
-		for (j = 0; j<kTableSize; j++) {
-			if ( keytable.transtable[ ithKeyTable[j]] == -1)
-				keytable.transtable[ ithKeyTable[j]] = j;
-		}
-	}
-	/* all done */
-	return noErr;
-}
-
-- (short) AsciiToKeyCode:(short)asciiCode {
-	return (asciiCode >= 0 && asciiCode <= 255) ? keytable.transtable[asciiCode] : -1;
-}
-
 - (void)typeString:(NSString *)string {
-	const char *s = [string UTF8String];
 	int i;
 	BOOL upper;
-	for (i = 0; i<strlen(s); i++) {
-		CGKeyCode code = [self AsciiToKeyCode:s[i]];
+	for (i = 0; i < [string length]; i++) {
+        unichar c = [string characterAtIndex:i];
+        CGKeyCode code = [[QSKeyCodeTranslator translator] keyCodeForCharCode:c];
+//        [self AsciiToKeyCode:s[i]];
 		// NSLog(@"%d", code);
-		upper = isupper(s[i]);
-		if (upper) CGPostKeyboardEvent( (CGCharCode) 0, (CGKeyCode)56, true ); // shift down
-		CGPostKeyboardEvent( (CGCharCode) s[i] , (CGKeyCode)code, true ); // 'z' down
-		CGPostKeyboardEvent( (CGCharCode) s[i] , (CGKeyCode)code, false ); // 'z' up
-		if (upper) CGPostKeyboardEvent( (CGCharCode) 0, (CGKeyCode)56, false ); // 'shift up
+		upper = isupper(c);
+		if (upper)
+            CGPostKeyboardEvent(kNullCharCode, kVK_Shift, true); // shift down
+		CGPostKeyboardEvent(c, code, true); // key down
+		CGPostKeyboardEvent(c, code, false); // key up
+		if (upper)
+            CGPostKeyboardEvent(kNullCharCode, kVK_Shift, false); // 'shift up
 	}
 }
 
