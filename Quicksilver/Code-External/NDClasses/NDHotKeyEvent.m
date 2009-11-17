@@ -973,8 +973,8 @@ UInt32 normalizeKeyCode(UInt32 theChar, unsigned short aKeyCode) {
 // For OS X >= 10.5, 32 and 64 bit supported
 // Used UpdateKeymap at http://www.libsdl.org/cgi/viewvc.cgi/trunk/SDL/src/video/cocoa/SDL_cocoakeyboard.m?view=markup
 // as source to figure this out.
- unichar unicharForKeyCode( unsigned short aKeyCode )
- {
+unichar unicharForKeyCode( unsigned short aKeyCode )
+{
 	const void				* theKeyboardLayoutData;
 	TISInputSourceRef 		theCurrentKeyBoardLayout;
 	UInt32					theChar = kNullCharCode;
@@ -988,7 +988,7 @@ UInt32 normalizeKeyCode(UInt32 theChar, unsigned short aKeyCode) {
 			UInt32 keyboardType = LMGetKbdType();
 			UInt32 deadKeyState = 0;
 			UniChar s[8];
-			UInt32 len;
+			UniCharCount len;
 			
 			OSStatus err = UCKeyTranslate((UCKeyboardLayout *) theKeyboardLayoutData,
 										  aKeyCode, kUCKeyActionDown, 0,
