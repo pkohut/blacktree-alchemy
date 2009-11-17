@@ -56,7 +56,7 @@ unsigned int cocoaModifierFlagsToCarbonModifierFlags( unsigned int aModifierFlag
 
 pascal OSErr eventHandlerCallback( EventHandlerCallRef anInHandlerCallRef, EventRef anInEvent, void * self );
 
-unsigned hashValueHashFunction( NSHashTable * aTable, const void * aHotKeyEvent );
+NSUInteger hashValueHashFunction( NSHashTable * aTable, const void * aHotKeyEvent );
 BOOL isEqualHashFunction( NSHashTable * aTable, const void * aFirstHotKeyEvent, const void * aSecondHotKeyEvent);
 NSString * describeHashFunction( NSHashTable * aTable, const void * aHotKeyEvent );
 
@@ -657,7 +657,7 @@ struct HotKeyMappingEntry
 /*
  * -hash
  */
-- (unsigned int)hash
+- (NSUInteger)hash
 {
 	return ((unsigned int)keyCode & ~modifierFlags) | (modifierFlags & ~((unsigned int)keyCode));		// xor
 }
@@ -734,7 +734,7 @@ pascal OSErr eventHandlerCallback( EventHandlerCallRef anInHandlerCallRef, Event
 /*
  * hashValueHashFunction()
  */
-unsigned hashValueHashFunction( NSHashTable * aTable, const void * aHotKeyEntry )
+NSUInteger hashValueHashFunction( NSHashTable * aTable, const void * aHotKeyEntry )
 {
 	struct HotKeyMappingEntry		* theHotKeyEntry;
 	unsigned int		theKeyCode,

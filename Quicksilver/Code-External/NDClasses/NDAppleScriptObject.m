@@ -597,7 +597,7 @@ const NSString			* NDAppleScriptPartialResult = @"Error Partial Result";
 	struct { const NSString * key; const DescType desiredType; const OSType selector; }
 			theResults[] = {
 				{ NSAppleScriptErrorMessage, typeText, kOSAErrorMessage },
-				{ NSAppleScriptErrorNumber, typeShortInteger, kOSAErrorNumber },
+				{ NSAppleScriptErrorNumber, typeSInt16, kOSAErrorNumber },
 				{ NSAppleScriptErrorAppName, typeText, kOSAErrorApp },
 				{ NSAppleScriptErrorBriefMessage, typeText, kOSAErrorBriefMessage },
 				{ NSAppleScriptErrorRange, typeOSAErrorRange, kOSAErrorRange },

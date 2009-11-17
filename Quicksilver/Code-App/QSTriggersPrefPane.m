@@ -183,7 +183,7 @@
 	//	[[triggerTable tableColumnWithIdentifier: @"command"] setDataCell:imageAndTextCell];
 
 	NSColor *color = [triggerSetsTable backgroundColor];
-	float hue, saturation, brightness, alpha;
+	CGFloat hue, saturation, brightness, alpha;
 	[color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
 	// NSLog(@"hu %f %f %f %f", hue, saturation, brightness, alpha);
 

@@ -23,7 +23,7 @@ struct QSGradientPoint {
 }
 */
 
-void QSColorFade(void *info, const float *in, float *out) {
+void QSColorFade(void *info, const CGFloat *in, CGFloat *out) {
 	float v = *in;
 	float *colors = info;
 	int i;
@@ -36,8 +36,8 @@ void QSFillRectWithGradientFromEdge(NSRect rect, NSColor *start, NSColor *end, N
 	start = [start colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 	end = [end colorUsingColorSpaceName:NSDeviceRGBColorSpace];
 	size_t components;
-	static const float domain[2] = { 0, 1 } ;
-	static const float range[10] = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 } ;
+	static const CGFloat domain[2] = { 0, 1 } ;
+	static const CGFloat range[10] = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 } ;
 	static const CGFunctionCallbacks callbacks = { 0, &QSColorFade, NULL } ;
 
 	float colors[8] = {

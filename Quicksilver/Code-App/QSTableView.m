@@ -45,7 +45,7 @@
 - (void)setOpaque:(BOOL)flag {
 	opaque = flag;
 }
-- (void)drawRow:(int)rowIndex clipRect:(NSRect)clipRect {
+- (void)drawRow:(NSInteger)rowIndex clipRect:(NSRect)clipRect {
 	// drawingRow = rowIndex;
 
 	if ([[self delegate] respondsToSelector:@selector(tableView:rowIsSeparator:)]
