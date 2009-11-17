@@ -5,3 +5,5 @@ QS_INFO_VERSION = ß56a7
 
 // The current development version shown in About Box
 QS_BUNDLE_VERSION = 3839
+
+DEVELOPER_DEBUG_ARCHS = i386

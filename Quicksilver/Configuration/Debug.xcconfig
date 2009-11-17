@@ -1,6 +1,6 @@
 #include "Common.xcconfig"
 
-ARCHS = i386 // Change this to $(NATIVE_ARCH_ACTUAL) when 64bit support is ready.
+ARCHS = $(DEVELOPER_DEBUG_ARCHS)
 
 DEBUG_INFORMATION_FORMAT = dwarf
 
