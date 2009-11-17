@@ -97,7 +97,7 @@
 	NSEvent *reentry = [NSApp nextEventMatchingMask:NSMouseEnteredMask untilDate:[NSDate dateWithTimeIntervalSinceNow:0.333] inMode:NSDefaultRunLoopMode dequeue:NO];
 	if ([reentry windowNumber] != [self windowNumber])
 		reentry = nil;
-	if (!reentry && !StillDown() ) {
+	if (!reentry && ![[[NSApplication sharedApplication] currentEvent] isMouseDown]) {
 		[self hideOrOrderOut:self];
 	}
 }

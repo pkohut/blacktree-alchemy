@@ -21,6 +21,7 @@
 
 
 @interface NSEvent (BLTRExtensions)
-+ (NSTimeInterval) doubleClickTime;
-- (int) standardModifierFlags;
++ (NSTimeInterval)doubleClickTime;
+- (BOOL)isMouseDown;
+- (int)standardModifierFlags;
 @end
